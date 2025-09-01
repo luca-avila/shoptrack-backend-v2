@@ -1,1 +1,0 @@
-# Authentication routes - implement your auth endpoints here

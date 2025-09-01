@@ -1,1 +1,1 @@
-# SQLAlchemy database configuration - implement your database setup here
+# SQLAlchemy database configuration
