@@ -1,5 +1,6 @@
 import os
 import logging
+from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
@@ -22,7 +23,7 @@ except Exception as e:
     raise
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-Session = scoped_session(SessionLocal)
+ScopedSession = scoped_session(SessionLocal)
 
 def init_app(app):
     try:
@@ -32,9 +33,16 @@ def init_app(app):
         logger.exception("Error while creating tables")
         raise
 
+    @app.before_request
+    def create_session():
+        g.db = ScopedSession()
+
     @app.teardown_appcontext
     def shutdown_session(exception=None):
-        if exception:
-            logger.warning(f"Session rolled back due to exception: {exception}")
-            Session.rollback()
-        Session.remove()
+        db = g.pop('db', None)
+        if db is not None:
+            if exception:
+                logger.warning(f"Session rolled back due to exception: {exception}")
+                db.rollback()
+            db.close()
+            ScopedSession.remove()
