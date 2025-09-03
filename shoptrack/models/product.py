@@ -12,7 +12,6 @@ class Product(Base):
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     owner: Mapped["User"] = relationship(back_populates="products")
 
-    # Constraints
     __table_args__ = (
         CheckConstraint('price > 0.0', name='price_positive'),
         CheckConstraint('stock >= 0', name='stock_positive')
