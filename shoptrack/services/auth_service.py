@@ -29,7 +29,6 @@ class AuthService(BaseService):
             expires = datetime.now() + timedelta(days=30)
             self.session_repository.create_session(user.id, expires)
             
-            self.commit()
             return user
         except Exception as e:
             self.handle_error(e, "User registration failed")
@@ -38,7 +37,6 @@ class AuthService(BaseService):
         """Logout a user"""
         try:
             count = self.session_repository.invalidate_user_sessions(user_id)
-            self.commit()
             return count
         except Exception as e:
             self.handle_error(e, "Logout failed")
@@ -52,7 +50,6 @@ class AuthService(BaseService):
         try:
             expires = datetime.now() + timedelta(days=30)
             session = self.session_repository.extend_session(session_id, expires)
-            self.commit()
             return session
         except Exception as e:
             self.handle_error(e, "Session extension failed")
