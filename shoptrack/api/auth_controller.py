@@ -93,6 +93,33 @@ class AuthController(BaseController):
         except Exception as e:
             self.logger.error(f"Logout error: {e}")
             return self.error_response(message="Logout failed")
-
-
+    
+    def validate(self):
+        """Validate current session and return user information"""
+        try:
+            # Get current user from session token
+            user_id = self.get_current_user_id()
+            if not user_id:
+                return self.error_response(message="No valid session found", status_code=401)
+                
+            services = self.get_services()
             
+            # Get user information
+            user = services['user'].get_user_by_id(user_id)
+            if not user:
+                return self.error_response(message="User not found", status_code=404)
+            
+            # Return user data without sensitive information
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'created_at': user.created_at.isoformat() if user.created_at else None,
+                'updated_at': user.updated_at.isoformat() if user.updated_at else None
+            }
+            
+            return self.success_response(message="Validation successful", data={'user': user_data})
+            
+        except Exception as e:
+            self.logger.error(f"Validation error: {e}")
+            return self.error_response(message="Session validation failed")
