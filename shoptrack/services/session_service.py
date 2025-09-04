@@ -13,7 +13,7 @@ class SessionService(BaseService):
         except Exception as e:
             self.handle_error(e, "Session creation failed")
     
-    def get_session(self, session_id):
+    def get_session_by_id(self, session_id):
         """Get a session by id"""
         return self.session_repository.get_by_id(session_id)
     
