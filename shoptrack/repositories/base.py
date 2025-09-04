@@ -12,7 +12,7 @@ class BaseRepository(Generic[T]):
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def create(self, **kwargs) -> T:
-        """Create a new record (no commit here)"""
+        """Create a new record"""
         try:
             instance = self.model_class(**kwargs)
             self.session.add(instance)
@@ -64,7 +64,7 @@ class BaseRepository(Generic[T]):
             raise
 
     def update(self, id: int, **kwargs) -> Optional[T]:
-        """Update record by id (commit in service layer)"""
+        """Update record by id"""
         try:
             instance = self.get_by_id(id)
             if instance:
@@ -76,7 +76,7 @@ class BaseRepository(Generic[T]):
             raise
 
     def delete(self, id: int) -> bool:
-        """Delete record by id (commit in service layer)"""
+        """Delete record by id"""
         try:
             instance = self.get_by_id(id)
             if instance:
