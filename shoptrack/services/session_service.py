@@ -7,7 +7,11 @@ class SessionService(BaseService):
 
     def create_session(self, user_id):
         """Create a session"""
-        return self.session_repository.create_session(user_id, datetime.now() + timedelta(days=30))
+        try:
+            session = self.session_repository.create_session(user_id, datetime.now() + timedelta(days=30))
+            return session
+        except Exception as e:
+            self.handle_error(e, "Session creation failed")
     
     def get_session(self, session_id):
         """Get a session by id"""
@@ -23,26 +27,46 @@ class SessionService(BaseService):
     
     def update_session(self, session_id, expires=None):
         """Update a session"""
-        updates = {}
-        if expires:
-            updates['expires'] = expires
-        return self.session_repository.update(session_id, **updates)
+        try:
+            updates = {}
+            if expires:
+                updates['expires'] = expires
+            session = self.session_repository.update(session_id, **updates)
+            return session
+        except Exception as e:
+            self.handle_error(e, "Session update failed")
     
     def delete_session(self, session_id):
         """Delete a session"""
-        return self.session_repository.delete(session_id)
+        try:
+            result = self.session_repository.delete(session_id)
+            return result
+        except Exception as e:
+            self.handle_error(e, "Session deletion failed")
     
     def extend_session(self, session_id):
         """Extend a session"""
-        return self.session_repository.extend_session(session_id, datetime.now() + timedelta(days=30))
+        try:
+            session = self.session_repository.extend_session(session_id, datetime.now() + timedelta(days=30))
+            return session
+        except Exception as e:
+            self.handle_error(e, "Session extension failed")
     
     def invalidate_session(self, session_id):
         """Invalidate a session"""
-        return self.session_repository.invalidate_session(session_id)
+        try:
+            result = self.session_repository.invalidate_session(session_id)
+            return result
+        except Exception as e:
+            self.handle_error(e, "Session invalidation failed")
     
     def invalidate_user_sessions(self, user_id):
         """Invalidate all sessions for a user"""
-        return self.session_repository.invalidate_user_sessions(user_id)
+        try:
+            result = self.session_repository.invalidate_user_sessions(user_id)
+            return result
+        except Exception as e:
+            self.handle_error(e, "User session invalidation failed")
     
     def get_active_sessions(self):
         """Get all active (non-expired) sessions"""
@@ -62,7 +86,11 @@ class SessionService(BaseService):
     
     def cleanup_expired_sessions(self):
         """Remove all expired sessions from the database"""
-        return self.session_repository.cleanup_expired_sessions()
+        try:
+            result = self.session_repository.cleanup_expired_sessions()
+            return result
+        except Exception as e:
+            self.handle_error(e, "Session cleanup failed")
     
     def get_session_statistics(self, user_id):
         """Get session statistics for a user"""
