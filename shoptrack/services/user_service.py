@@ -1,6 +1,5 @@
 from .base import BaseService
-from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash
 
 class UserService(BaseService):
     def __init__(self, session):
