@@ -10,7 +10,7 @@ class Session(BaseModel):
     expires: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     
     # Relationship
-    user: Mapped["User"] = relationship()
+    user: Mapped["User"] = relationship(back_populates="sessions")
 
     def __repr__(self):
         return f"<Session(id={self.id}, user_id={self.user_id}, expires={self.expires})>"

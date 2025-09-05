@@ -14,7 +14,15 @@ class User(BaseModel):
     products: Mapped[List['Product']] = relationship(
         back_populates='owner',
         cascade='all, delete-orphan'
-        )
+    )
+    history: Mapped[List['History']] = relationship(
+        back_populates='user',
+        cascade='all, delete-orphan'
+    )
+    sessions: Mapped[List['Session']] = relationship(
+        back_populates='user',
+        cascade='all, delete-orphan'
+    )
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}')>"

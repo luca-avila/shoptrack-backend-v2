@@ -14,3 +14,7 @@ def validate_username_password():
 def validate_product_creation():
     """Validate product creation fields are present"""
     return validate_required_fields(['name', 'price', 'stock'])
+
+def validate_transaction():
+    """Validate transaction fields are present"""
+    return validate_required_fields(['product_name', 'price', 'quantity', 'action'])

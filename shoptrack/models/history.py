@@ -14,8 +14,8 @@ class History(BaseModel):
     action: Mapped[str] = mapped_column(String(10), nullable=False)
 
     # Relationships
-    user: Mapped["User"] = relationship()
-    product: Mapped[Optional["Product"]] = relationship()
+    user: Mapped["User"] = relationship(back_populates="history")
+    product: Mapped[Optional["Product"]] = relationship(back_populates="history")
 
     __table_args__ = (
         CheckConstraint('price > 0.0', name='price_positive'),

@@ -13,6 +13,10 @@ class Product(BaseModel):
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     owner: Mapped["User"] = relationship(back_populates="products")
+    history: Mapped[List['History']] = relationship(
+        back_populates='product',
+        cascade='all, delete-orphan'
+    )
 
     __table_args__ = (
         CheckConstraint('price > 0.0', name='price_positive'),
