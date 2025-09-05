@@ -10,3 +10,7 @@ def validate_required_fields(required_fields):
 def validate_username_password():
     """Validate username and password fields are present"""
     return validate_required_fields(['username', 'password'])
+
+def validate_product_creation():
+    """Validate product creation fields are present"""
+    return validate_required_fields(['name', 'price', 'stock'])

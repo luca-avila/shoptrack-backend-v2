@@ -252,6 +252,14 @@ class HistoryService(BaseService):
     def delete_transaction(self, history_id):
         """Delete a transaction record"""
         try:
+            # Validate transaction exists
+            if not history_id:
+                raise ValueError("History ID is required")
+            
+            transaction = self.history_repository.get_by_id(history_id)
+            if not transaction:
+                return False
+            
             result = self.history_repository.delete(history_id)
             return result
         except Exception as e:
@@ -260,6 +268,14 @@ class HistoryService(BaseService):
     def update_transaction(self, history_id, product_name=None, price=None, quantity=None, action=None):
         """Update a transaction record"""
         try:
+            # Validate transaction exists
+            if not history_id:
+                raise ValueError("History ID is required")
+            
+            transaction = self.history_repository.get_by_id(history_id)
+            if not transaction:
+                return None
+            
             # Validate action if provided
             if action is not None and action not in ["buy", "sell"]:
                 raise ValueError("Action must be 'buy' or 'sell'")

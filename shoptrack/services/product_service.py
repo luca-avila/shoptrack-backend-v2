@@ -7,11 +7,9 @@ class ProductService(BaseService):
     def create_product(self, name, price, stock=0, description=None, owner_id=None):
         """Create a new product"""
         try:
-            # Validate price is positive
             if price <= 0:
                 raise ValueError("Price must be greater than 0")
             
-            # Validate stock is non-negative
             if stock < 0:
                 raise ValueError("Stock cannot be negative")
             
@@ -57,6 +55,14 @@ class ProductService(BaseService):
     def update_product(self, product_id, name=None, price=None, stock=None, description=None):
         """Update a product"""
         try:
+            # Validate product exists
+            if not product_id:
+                raise ValueError("Product ID is required")
+            
+            product = self.product_repository.get_by_id(product_id)
+            if not product:
+                return None
+            
             # Validate price if provided
             if price is not None and price <= 0:
                 raise ValueError("Price must be greater than 0")
@@ -83,6 +89,14 @@ class ProductService(BaseService):
     def delete_product(self, product_id):
         """Delete a product"""
         try:
+            # Validate product exists
+            if not product_id:
+                raise ValueError("Product ID is required")
+            
+            product = self.product_repository.get_by_id(product_id)
+            if not product:
+                return False
+            
             result = self.product_repository.delete(product_id)
             return result
         except Exception as e:
@@ -91,12 +105,16 @@ class ProductService(BaseService):
     def add_stock(self, product_id, quantity):
         """Add stock to a product"""
         try:
+            # Validate product exists
+            if not product_id:
+                raise ValueError("Product ID is required")
+            
             if quantity <= 0:
                 raise ValueError("Quantity must be greater than 0")
             
             product = self.product_repository.get_by_id(product_id)
             if not product:
-                raise ValueError("Product not found")
+                return None
             
             new_stock = product.stock + quantity
             return self.product_repository.update(product_id, stock=new_stock)
@@ -106,12 +124,16 @@ class ProductService(BaseService):
     def remove_stock(self, product_id, quantity):
         """Remove stock from a product"""
         try:
+            # Validate product exists
+            if not product_id:
+                raise ValueError("Product ID is required")
+            
             if quantity <= 0:
                 raise ValueError("Quantity must be greater than 0")
             
             product = self.product_repository.get_by_id(product_id)
             if not product:
-                raise ValueError("Product not found")
+                return None
             
             if product.stock < quantity:
                 raise ValueError("Insufficient stock")
@@ -124,8 +146,16 @@ class ProductService(BaseService):
     def set_stock(self, product_id, quantity):
         """Set stock for a product"""
         try:
+            # Validate product exists
+            if not product_id:
+                raise ValueError("Product ID is required")
+            
             if quantity < 0:
                 raise ValueError("Stock cannot be negative")
+            
+            product = self.product_repository.get_by_id(product_id)
+            if not product:
+                return None
             
             return self.product_repository.update(product_id, stock=quantity)
         except Exception as e:
@@ -134,8 +164,16 @@ class ProductService(BaseService):
     def update_price(self, product_id, new_price):
         """Update product price"""
         try:
+            # Validate product exists
+            if not product_id:
+                raise ValueError("Product ID is required")
+            
             if new_price <= 0:
                 raise ValueError("Price must be greater than 0")
+            
+            product = self.product_repository.get_by_id(product_id)
+            if not product:
+                return None
             
             return self.product_repository.update(product_id, price=new_price)
         except Exception as e:
@@ -146,11 +184,9 @@ class ProductService(BaseService):
         try:
             all_products = self.product_repository.get_all()
             
-            # Filter by owner if specified
             if owner_id:
                 all_products = [p for p in all_products if p.owner_id == owner_id]
             
-            # Search in name and description
             query_lower = query.lower()
             matching_products = [
                 p for p in all_products 
@@ -173,7 +209,6 @@ class ProductService(BaseService):
             
             all_products = self.product_repository.get_all()
             
-            # Filter by owner if specified
             if owner_id:
                 all_products = [p for p in all_products if p.owner_id == owner_id]
             
@@ -191,8 +226,7 @@ class ProductService(BaseService):
         """Get product statistics"""
         try:
             all_products = self.product_repository.get_all()
-            
-            # Filter by owner if specified
+
             if owner_id:
                 all_products = [p for p in all_products if p.owner_id == owner_id]
             

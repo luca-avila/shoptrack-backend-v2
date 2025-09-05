@@ -28,6 +28,14 @@ class SessionService(BaseService):
     def update_session(self, session_id, expires=None):
         """Update a session"""
         try:
+            # Validate session exists
+            if not session_id:
+                raise ValueError("Session ID is required")
+            
+            session = self.session_repository.get_by_id(session_id)
+            if not session:
+                return None
+            
             updates = {}
             if expires:
                 updates['expires'] = expires
@@ -39,6 +47,14 @@ class SessionService(BaseService):
     def delete_session(self, session_id):
         """Delete a session"""
         try:
+            # Validate session exists
+            if not session_id:
+                raise ValueError("Session ID is required")
+            
+            session = self.session_repository.get_by_id(session_id)
+            if not session:
+                return False
+            
             result = self.session_repository.delete(session_id)
             return result
         except Exception as e:
@@ -47,6 +63,14 @@ class SessionService(BaseService):
     def extend_session(self, session_id):
         """Extend a session"""
         try:
+            # Validate session exists
+            if not session_id:
+                raise ValueError("Session ID is required")
+            
+            session = self.session_repository.get_by_id(session_id)
+            if not session:
+                return None
+            
             session = self.session_repository.extend_session(session_id, datetime.now() + timedelta(days=30))
             return session
         except Exception as e:
@@ -55,6 +79,14 @@ class SessionService(BaseService):
     def invalidate_session(self, session_id):
         """Invalidate a session"""
         try:
+            # Validate session exists
+            if not session_id:
+                raise ValueError("Session ID is required")
+            
+            session = self.session_repository.get_by_id(session_id)
+            if not session:
+                return False
+            
             result = self.session_repository.invalidate_session(session_id)
             return result
         except Exception as e:
@@ -63,6 +95,14 @@ class SessionService(BaseService):
     def invalidate_user_sessions(self, user_id):
         """Invalidate all sessions for a user"""
         try:
+            # Validate user exists
+            if not user_id:
+                raise ValueError("User ID is required")
+            
+            user = self.user_repository.get_by_id(user_id)
+            if not user:
+                return 0
+            
             result = self.session_repository.invalidate_user_sessions(user_id)
             return result
         except Exception as e:

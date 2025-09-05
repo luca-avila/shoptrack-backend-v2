@@ -36,6 +36,14 @@ class UserService(BaseService):
     def update_user_profile(self, user_id, username=None, email=None):
         """Update a user profile"""
         try:
+            # Validate user exists
+            if not user_id:
+                raise ValueError("User ID is required")
+            
+            user = self.user_repository.get_by_id(user_id)
+            if not user:
+                return None
+            
             user = self.user_repository.update(user_id, username=username, email=email)
             return user
         except Exception as e:
@@ -44,6 +52,14 @@ class UserService(BaseService):
     def delete_user(self, user_id):
         """Delete a user"""
         try:
+            # Validate user exists
+            if not user_id:
+                raise ValueError("User ID is required")
+            
+            user = self.user_repository.get_by_id(user_id)
+            if not user:
+                return False
+            
             result = self.user_repository.delete(user_id)
             return result
         except Exception as e:
@@ -52,6 +68,17 @@ class UserService(BaseService):
     def change_password(self, user_id, password):
         """Change a user password"""
         try:
+            # Validate user exists
+            if not user_id:
+                raise ValueError("User ID is required")
+            
+            if not password:
+                raise ValueError("Password is required")
+            
+            user = self.user_repository.get_by_id(user_id)
+            if not user:
+                return None
+            
             user = self.user_repository.update(user_id, password=generate_password_hash(password))
             return user
         except Exception as e:
