@@ -122,3 +122,88 @@ class ProductController(BaseController):
         except Exception as e:
             self.logger.error(f"Error adding stock: {e}")
             return self.error_response(message="Failed to add stock")
+    
+    @with_transaction
+    def remove_stock(self, product_id, quantity):
+        """Remove stock from a product"""
+        try:
+            user_id = self.get_current_user_id()
+            if not user_id:
+                return self.error_response(message="User not found")
+
+            services = self.get_services()
+            product = services['product'].remove_stock(product_id, quantity)
+            if not product:
+                return self.error_response(message="Product not found")
+            
+            return self.success_response(data=product)
+        except Exception as e:
+            self.logger.error(f"Error removing stock: {e}")
+            return self.error_response(message="Failed to remove stock")
+    
+    @with_transaction
+    def set_stock(self, product_id, quantity):
+        """Set stock for a product"""
+        try:
+            user_id = self.get_current_user_id()
+            if not user_id:
+                return self.error_response(message="User not found")
+
+            services = self.get_services()
+            product = services['product'].set_stock(product_id, quantity)
+            if not product:
+                return self.error_response(message="Product not found")
+            
+            return self.success_response(data=product)
+        except Exception as e:
+            self.logger.error(f"Error setting stock: {e}")
+            return self.error_response(message="Failed to set stock")
+    
+    @with_transaction
+    def search(self, query):
+        """Search for a product"""
+        try:
+            user_id = self.get_current_user_id()
+            if not user_id:
+                return self.error_response(message="User not found")
+
+            services = self.get_services()
+            products = services['product'].search_products(query, user_id)
+            return self.success_response(data=products)
+        except Exception as e:
+            self.logger.error(f"Error searching for product: {e}")
+            return self.error_response(message="Failed to search for product")
+        
+    @with_transaction
+    def update_price(self, product_id, new_price):
+        """Update the price of a product"""
+        try:
+            user_id = self.get_current_user_id()
+            if not user_id:
+                return self.error_response(message="User not found")
+
+            services = self.get_services()
+            product = services['product'].update_price(product_id, new_price)
+            if not product:
+                return self.error_response(message="Product not found")
+            
+            return self.success_response(data=product)
+        except Exception as e:
+            self.logger.error(f"Error updating price for product: {e}")
+            return self.error_response(message="Failed to update price for product")
+    
+    def get_low_stock_products(self, threshold=10):
+        """Get low stock products"""
+        try:
+            user_id = self.get_current_user_id()
+            if not user_id:
+                return self.error_response(message="User not found")
+
+            services = self.get_services()
+            products = services['product'].get_low_stock_products(threshold)
+            # Filter by user's products
+            user_products = [p for p in products if p.owner_id == user_id]
+            return self.success_response(data=user_products)
+        except Exception as e:
+            self.logger.error(f"Error getting low stock products: {e}")
+            return self.error_response(message="Failed to get low stock products")
