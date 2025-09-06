@@ -20,7 +20,7 @@ class History(BaseModel):
     __table_args__ = (
         CheckConstraint('price > 0.0', name='price_positive'),
         CheckConstraint('quantity > 0', name='quantity_positive'),
-        CheckConstraint('action IN ("buy", "sell")', name='action_valid')
+        CheckConstraint("action IN ('buy', 'sell')", name='action_valid')
     )
     def __repr__(self):
         return f"<History(id={self.id}, action='{self.action}', product='{self.product_name}', quantity={self.quantity})>"

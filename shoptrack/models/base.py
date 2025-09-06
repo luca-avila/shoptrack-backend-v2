@@ -7,8 +7,8 @@ from ..database import Base
 class TimestampMixin:
     """Mixin to add timestamp fields to models"""
     id = Column(Integer, primary_key=True)
-    created = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
 
 class BaseModel(Base, TimestampMixin):

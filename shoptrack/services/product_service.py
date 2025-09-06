@@ -32,10 +32,6 @@ class ProductService(BaseService):
         """Get a product with owner information"""
         return self.product_repository.get_with_owner(product_id)
 
-    def get_product_with_owner_and_history(self, product_id):
-        """Get a product with owner and history information"""
-        return self.product_repository.get_with_owner_and_history(product_id)
-
     def get_all_products(self):
         """Get all products"""
         return self.product_repository.get_all()

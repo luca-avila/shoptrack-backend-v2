@@ -1,7 +1,7 @@
 from .base import BaseController
 from flask import request
 from ..utils.transactions import with_transaction
-from ..utils.validation_utils import validate_username_password, validate_session_id
+from ..utils.validation_utils import validate_username_password
 
 class AuthController(BaseController):
     def __init__(self):
@@ -29,9 +29,19 @@ class AuthController(BaseController):
                 password=request.json['password'],
                 email=request.json.get('email')
             )
-            
+            self.get_session().flush()
+
+            if not user:
+                self.logger.error(f"User creation failed: {user}")
+                return self.error_response(message="User creation failed")
+
             session = services['session'].create_session(user.id)
-            
+            self.get_session().flush()
+
+            if not session:
+                self.logger.error(f"Session creation failed: {session}")
+                return self.error_response(message="Session creation failed")
+
             return self.success_response(
                 message="User created successfully", 
                 data={'session_id': session.id, 'user_id': user.id}

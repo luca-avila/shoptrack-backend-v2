@@ -94,11 +94,11 @@ class UserService(BaseService):
     
     def validate_username_uniqueness(self, username):
         """Validate a username uniqueness"""
-        return self.user_repository.find_by_username(username) is not None
+        return self.user_repository.find_by_username(username) is None
     
     def validate_email_uniqueness(self, email):
         """Validate an email uniqueness"""
-        return self.user_repository.find_by_email(email) is not None
+        return self.user_repository.find_by_email(email) is None
     
     def get_user_products(self, user_id):
         """Get a user products"""
