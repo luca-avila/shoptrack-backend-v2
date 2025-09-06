@@ -15,11 +15,17 @@ class BaseModel(Base, TimestampMixin):
     """Base model class that other models inherit from"""
     __abstract__ = True
     
-    def to_dict(self):
-        """Convert model instance to dictionary"""
+    def to_dict(self, exclude=None):
+        """Convert model instance to dictionary, excluding sensitive fields"""
+        exclude = exclude or []
+        # Default sensitive fields to exclude
+        sensitive_fields = ['password', 'secret', 'token', 'key']
+        exclude = exclude + sensitive_fields
+        
         return {
             column.name: getattr(self, column.name)
             for column in self.__table__.columns
+            if column.name not in exclude
         }
     
     def __repr__(self):
