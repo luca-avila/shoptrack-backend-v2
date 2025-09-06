@@ -26,4 +26,14 @@ def client(app):
 @pytest.fixture(scope='session')
 def runner(app):
     """Create a test runner"""
-    return app.test_runner()
+    return app.test_cli_runner()
+
+@pytest.fixture(scope='function')
+def db_session(app):
+    """Create a test database session"""
+    from shoptrack.database import ScopedSession
+    session = ScopedSession()
+    yield session
+    session.rollback()
+    session.close()
+    ScopedSession.remove()
