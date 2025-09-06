@@ -31,8 +31,8 @@ class AuthController(BaseController):
             )
             self.get_session().flush()
 
-            if not user:
-                self.logger.error(f"User creation failed: {user}")
+            if not user or not user.id:
+                self.logger.error(f"User creation failed or user has no ID: {user}")
                 return self.error_response(message="User creation failed")
 
             session = services['session'].create_session(user.id)
@@ -73,6 +73,7 @@ class AuthController(BaseController):
                 return self.error_response(message="Invalid username or password")
             
             session = services['session'].create_session(user.id)
+            self.get_session().flush()
             
             return self.success_response(
                 message="Login successful", 
