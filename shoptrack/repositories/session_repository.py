@@ -59,9 +59,9 @@ class SessionRepository(BaseRepository[Session]):
         session = self.get_by_id(session_id)
         if not session:
             return False
-        # Convert timezone-aware datetime to naive for comparison with database
-        now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
-        return session.expires > now_naive
+        # Use timezone-aware datetime for comparison
+        now = datetime.now(timezone.utc)
+        return session.expires > now
 
     def create_session(self, user_id: int, expires: datetime) -> Session:
         """Create a new session for a user"""
@@ -74,20 +74,16 @@ class SessionRepository(BaseRepository[Session]):
     def invalidate_session(self, session_id: int) -> bool:
         """Invalidate a session by setting it to expired"""
         now = datetime.now(timezone.utc)
-        # Convert to naive datetime for database storage
-        now_naive = now.replace(tzinfo=None)
-        session = self.update(session_id, expires=now_naive)
+        session = self.update(session_id, expires=now)
         return session is not None
 
     def invalidate_user_sessions(self, user_id: int) -> int:
         """Invalidate all sessions for a user (logout from all devices)"""
         now = datetime.now(timezone.utc)
-        # Convert to naive datetime for database storage
-        now_naive = now.replace(tzinfo=None)
         sessions = self.find_user_active_sessions(user_id)
         count = 0
         for session in sessions:
-            if self.update(session.id, expires=now_naive):
+            if self.update(session.id, expires=now):
                 count += 1
         return count
 

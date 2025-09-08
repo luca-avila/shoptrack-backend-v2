@@ -1,5 +1,5 @@
 from .base import BaseService
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 class SessionService(BaseService):
     def __init__(self, session):
@@ -8,7 +8,7 @@ class SessionService(BaseService):
     def create_session(self, user_id):
         """Create a session"""
         try:
-            session = self.session_repository.create_session(user_id, datetime.now() + timedelta(days=30))
+            session = self.session_repository.create_session(user_id, datetime.now(timezone.utc) + timedelta(days=30))
             return session
         except Exception as e:
             self.handle_error(e, "Session creation failed")
@@ -71,7 +71,7 @@ class SessionService(BaseService):
             if not session:
                 return None
             
-            session = self.session_repository.extend_session(session_id, datetime.now() + timedelta(days=30))
+            session = self.session_repository.extend_session(session_id, datetime.now(timezone.utc) + timedelta(days=30))
             return session
         except Exception as e:
             self.handle_error(e, "Session extension failed")
