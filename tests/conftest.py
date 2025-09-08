@@ -4,29 +4,24 @@ from shoptrack import create_app
 from shoptrack.database import engine, Base
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def app():
-    """Create a test app"""
-
+    """Create a test app for each test function"""
     os.environ['FLASK_ENV'] = 'testing'
-
     app = create_app('testing')
-
+    
     with app.app_context():
+        # Create fresh tables for each test
+        Base.metadata.drop_all(bind=engine)
         Base.metadata.create_all(bind=engine)
         yield app
-
+        # Clean up after test
         Base.metadata.drop_all(bind=engine)
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def client(app):
     """Create a test client"""
     return app.test_client()
-
-@pytest.fixture(scope='session')
-def runner(app):
-    """Create a test runner"""
-    return app.test_cli_runner()
 
 @pytest.fixture(scope='function')
 def db_session(app):
