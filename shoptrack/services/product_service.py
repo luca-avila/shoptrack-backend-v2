@@ -113,7 +113,20 @@ class ProductService(BaseService):
                 return None
             
             new_stock = product.stock + quantity
-            return self.product_repository.update(product_id, stock=new_stock)
+            updated_product = self.product_repository.update(product_id, stock=new_stock)
+            
+            # Create transaction record for stock addition (buy)
+            if updated_product:
+                self.history_repository.create(
+                    product_id=product_id,
+                    product_name=product.name,
+                    user_id=product.owner_id,
+                    price=product.price,
+                    quantity=quantity,
+                    action="buy"
+                )
+            
+            return updated_product
         except Exception as e:
             self.handle_error(e, "Stock addition failed")
 
@@ -135,7 +148,20 @@ class ProductService(BaseService):
                 raise ValueError("Insufficient stock")
             
             new_stock = product.stock - quantity
-            return self.product_repository.update(product_id, stock=new_stock)
+            updated_product = self.product_repository.update(product_id, stock=new_stock)
+            
+            # Create transaction record for stock removal (sell)
+            if updated_product:
+                self.history_repository.create(
+                    product_id=product_id,
+                    product_name=product.name,
+                    user_id=product.owner_id,
+                    price=product.price,
+                    quantity=quantity,
+                    action="sell"
+                )
+            
+            return updated_product
         except Exception as e:
             self.handle_error(e, "Stock removal failed")
 
@@ -153,7 +179,33 @@ class ProductService(BaseService):
             if not product:
                 return None
             
-            return self.product_repository.update(product_id, stock=quantity)
+            old_stock = product.stock
+            updated_product = self.product_repository.update(product_id, stock=quantity)
+            
+            # Create transaction record for stock change
+            if updated_product:
+                stock_difference = quantity - old_stock
+                if stock_difference > 0:
+                    # Stock increased - record as buy
+                    action = "buy"
+                    transaction_quantity = stock_difference
+                elif stock_difference < 0:
+                    # Stock decreased - record as sell
+                    action = "sell"
+                    transaction_quantity = abs(stock_difference)
+                else:
+                    return updated_product
+                
+                self.history_repository.create(
+                    product_id=product_id,
+                    product_name=product.name,
+                    user_id=product.owner_id,
+                    price=product.price,
+                    quantity=transaction_quantity,
+                    action=action
+                )
+            
+            return updated_product
         except Exception as e:
             self.handle_error(e, "Stock setting failed")
 
