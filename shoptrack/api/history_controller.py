@@ -20,9 +20,10 @@ class HistoryController(BaseController):
                 history = services['history'].get_transaction_by_id(history_id)
                 if not history:
                     return self.error_response(message="Transaction not found")
+                return self.success_response(data=history.to_dict())
             else:
                 history = services['history'].get_transactions_by_user(user_id)
-            return self.success_response(data=history)
+                return self.success_response(data=[h.to_dict() for h in history])
         except Exception as e:
             self.logger.error(f"Error getting history: {e}")
             return self.error_response(message="Failed to retrieve history")
@@ -51,7 +52,7 @@ class HistoryController(BaseController):
                 quantity=request.json['quantity'],
                 action=request.json['action']
             )
-            return self.success_response(data=history)
+            return self.success_response(data=history.to_dict())
         except Exception as e:
             self.logger.error(f"Error creating transaction: {e}")
             return self.error_response(message="Transaction creation failed")
@@ -77,7 +78,7 @@ class HistoryController(BaseController):
             )
             if not history:
                 return self.error_response(message="Transaction not found")
-            return self.success_response(data=history)
+            return self.success_response(data=history.to_dict())
         except Exception as e:
             self.logger.error(f"Error updating transaction: {e}")
             return self.error_response(message="Transaction update failed")
@@ -111,7 +112,7 @@ class HistoryController(BaseController):
 
             services = self.get_services()
             history = services['history'].get_user_transactions_by_action(user_id, action)
-            return self.success_response(data=history)
+            return self.success_response(data=[h.to_dict() for h in history])
         except Exception as e:
             self.logger.error(f"Error getting transactions by action: {e}")
             return self.error_response(message="Failed to get transactions by action")
@@ -127,7 +128,7 @@ class HistoryController(BaseController):
             # Get all transactions for the product, then filter by user
             all_transactions = services['history'].get_transactions_by_product(product_id)
             user_transactions = [t for t in all_transactions if t.user_id == user_id]
-            return self.success_response(data=user_transactions)
+            return self.success_response(data=[t.to_dict() for t in user_transactions])
         except Exception as e:
             self.logger.error(f"Error getting transactions by product id: {e}")
             return self.error_response(message="Failed to get transactions by product id")

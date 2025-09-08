@@ -16,6 +16,7 @@ class BaseRepository(Generic[T]):
         try:
             instance = self.model_class(**kwargs)
             self.session.add(instance)
+            self.session.flush()
             return instance
         except SQLAlchemyError as e:
             self.logger.error(f"Error creating {self.model_class.__name__}: {e}")

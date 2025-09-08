@@ -88,15 +88,23 @@ class AuthController(BaseController):
     def logout(self):
         """Logout a user"""
         try:
-            # Get current user from session token
-            user_id = self.get_current_user_id()
-            if not user_id:
-                return self.error_response(message="User not found")
+            # Get session ID from token
+            auth_header = request.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                return self.error_response(message="Invalid authorization header", status_code=401)
+            
+            try:
+                token = auth_header.split(' ')[1]
+                session_id = int(token)
+            except ValueError:
+                return self.error_response(message="Invalid token", status_code=401)
             
             services = self.get_services()
             
-            # Invalidate user session
-            services['session'].invalidate_user_sessions(user_id)
+            # Invalidate the specific session
+            result = services['session'].invalidate_session(session_id)
+            if not result:
+                return self.error_response(message="Session not found", status_code=404)
             
             return self.success_response(message="Logout successful")
             

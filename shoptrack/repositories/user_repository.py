@@ -19,4 +19,5 @@ class UserRepository(BaseRepository[User]):
     def get_with_products(self, user_id: int) -> Optional[User]:
         """Get user with products"""
         stmt = select(User).where(User.id == user_id).options(joinedload(User.products))
-        return self.session.execute(stmt).scalar_one_or_none()
+        result = self.session.execute(stmt).unique().scalar_one_or_none()
+        return result

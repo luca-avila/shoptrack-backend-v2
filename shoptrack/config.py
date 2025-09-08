@@ -13,7 +13,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Development config class"""
     DEBUG = True
-    DATABASE_URL = os.getenv('sqlite:///shoptrack.db')
+    DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///shoptrack.db')
 
 class ProductionConfig(Config):
     """Production config class"""

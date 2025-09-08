@@ -30,7 +30,7 @@ class ProductController(BaseController):
                 stock=request.json['stock'],
                 owner_id=user_id
             )
-            return self.success_response(data=product)
+            return self.success_response(data=product.to_dict())
             
         except Exception as e:
             self.logger.error(f"Error creating product: {e}")
@@ -48,12 +48,15 @@ class ProductController(BaseController):
 
             if not product_id:
                 products = services['product'].get_products_by_owner(user_id)
-                return self.success_response(data=products)
+                return self.success_response(data=[p.to_dict() for p in products])
             else:
                 product = services['product'].get_product_by_id(product_id)
                 if not product:
                     return self.error_response(message="Product not found")
-                return self.success_response(data=product)
+                # Check if user owns the product
+                if product.owner_id != user_id:
+                    return self.error_response(message="Product not found", status_code=400)
+                return self.success_response(data=product.to_dict())
 
         except Exception as e:
             self.logger.error(f"Error getting product: {e}")
@@ -82,7 +85,7 @@ class ProductController(BaseController):
             if not product:
                 return self.error_response(message="Product not found")
             
-            return self.success_response(data=product)
+            return self.success_response(data=product.to_dict())
         except Exception as e:
             self.logger.error(f"Error updating product: {e}")
             return self.error_response(message="Product update failed")
@@ -118,7 +121,7 @@ class ProductController(BaseController):
             if not product:
                 return self.error_response(message="Product not found")
             
-            return self.success_response(data=product)
+            return self.success_response(data=product.to_dict())
         except Exception as e:
             self.logger.error(f"Error adding stock: {e}")
             return self.error_response(message="Failed to add stock")
@@ -136,7 +139,7 @@ class ProductController(BaseController):
             if not product:
                 return self.error_response(message="Product not found")
             
-            return self.success_response(data=product)
+            return self.success_response(data=product.to_dict())
         except Exception as e:
             self.logger.error(f"Error removing stock: {e}")
             return self.error_response(message="Failed to remove stock")
@@ -154,7 +157,7 @@ class ProductController(BaseController):
             if not product:
                 return self.error_response(message="Product not found")
             
-            return self.success_response(data=product)
+            return self.success_response(data=product.to_dict())
         except Exception as e:
             self.logger.error(f"Error setting stock: {e}")
             return self.error_response(message="Failed to set stock")
@@ -169,7 +172,7 @@ class ProductController(BaseController):
 
             services = self.get_services()
             products = services['product'].search_products(query, user_id)
-            return self.success_response(data=products)
+            return self.success_response(data=[p.to_dict() for p in products])
         except Exception as e:
             self.logger.error(f"Error searching for product: {e}")
             return self.error_response(message="Failed to search for product")
@@ -187,7 +190,7 @@ class ProductController(BaseController):
             if not product:
                 return self.error_response(message="Product not found")
             
-            return self.success_response(data=product)
+            return self.success_response(data=product.to_dict())
         except Exception as e:
             self.logger.error(f"Error updating price for product: {e}")
             return self.error_response(message="Failed to update price for product")
@@ -203,7 +206,7 @@ class ProductController(BaseController):
             products = services['product'].get_low_stock_products(threshold)
             # Filter by user's products
             user_products = [p for p in products if p.owner_id == user_id]
-            return self.success_response(data=user_products)
+            return self.success_response(data=[p.to_dict() for p in user_products])
         except Exception as e:
             self.logger.error(f"Error getting low stock products: {e}")
             return self.error_response(message="Failed to get low stock products")

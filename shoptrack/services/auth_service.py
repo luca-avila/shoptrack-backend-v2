@@ -8,7 +8,7 @@ class AuthService(BaseService):
 
     def authenticate_user(self, username, password):
         """Authenticate a user"""
-        user = self.user_repository.get_by(username=username)
+        user = self.user_repository.find_by_username(username)
         if not user:
             return None
         if not check_password_hash(user.password, password):
@@ -25,6 +25,7 @@ class AuthService(BaseService):
                 password=hashed_password,
                 email=email
             )
+            self.session.flush()
             
             expires = datetime.now() + timedelta(days=30)
             self.session_repository.create_session(user.id, expires)

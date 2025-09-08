@@ -91,6 +91,10 @@ class BaseController:
                 return None
                 
             services = self.get_services()
+            # Check if session is valid (not expired) before returning user_id
+            if not services['session'].is_session_valid(session_id):
+                return None
+                
             session = services['session'].get_session_by_id(session_id)
             return session.user_id if session else None
         except Exception as e:
