@@ -42,7 +42,7 @@ class TestAuthController:
         # Create a user first
         user_service = UserService(db_session)
         user_service.create_user('testuser', 'password123', 'test@example.com')
-        
+        db_session.commit()
         response = client.post('/api/auth/login', 
             json={
                 'username': 'testuser',

@@ -14,7 +14,7 @@ class TestUserService:
             password='plainpassword',
             email='test@example.com'
         )
-        
+        db_session.flush()
         # Verify user was created
         assert user is not None
         assert user.username == 'testuser'
@@ -31,7 +31,7 @@ class TestUserService:
         
         # Create a user first
         service.create_user('testuser', 'password', 'test@example.com')
-        
+        db_session.flush()
         # Retrieve user by username
         user = service.get_user_by_username('testuser')
         
@@ -48,6 +48,6 @@ class TestUserService:
         
         # Create a user
         service.create_user('newuser', 'password', 'test@example.com')
-        
+        db_session.flush()
         # Username should no longer be available
         assert service.validate_username_availability('newuser') == False
