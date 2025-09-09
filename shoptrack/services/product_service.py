@@ -117,14 +117,19 @@ class ProductService(BaseService):
             
             # Create transaction record for stock addition (buy)
             if updated_product:
-                self.history_repository.create(
-                    product_id=product_id,
-                    product_name=product.name,
-                    user_id=product.owner_id,
-                    price=product.price,
-                    quantity=quantity,
-                    action="buy"
-                )
+                try:
+                    self.history_repository.create(
+                        product_id=product_id,
+                        product_name=product.name,
+                        user_id=product.owner_id,
+                        price=product.price,
+                        quantity=quantity,
+                        action="buy"
+                    )
+                    self.logger.info(f"Created buy transaction for product {product_id}, quantity {quantity}")
+                except Exception as e:
+                    self.logger.error(f"Failed to create transaction: {e}")
+                    # Don't fail the stock update if transaction creation fails
             
             return updated_product
         except Exception as e:
@@ -152,14 +157,19 @@ class ProductService(BaseService):
             
             # Create transaction record for stock removal (sell)
             if updated_product:
-                self.history_repository.create(
-                    product_id=product_id,
-                    product_name=product.name,
-                    user_id=product.owner_id,
-                    price=product.price,
-                    quantity=quantity,
-                    action="sell"
-                )
+                try:
+                    self.history_repository.create(
+                        product_id=product_id,
+                        product_name=product.name,
+                        user_id=product.owner_id,
+                        price=product.price,
+                        quantity=quantity,
+                        action="sell"
+                    )
+                    self.logger.info(f"Created sell transaction for product {product_id}, quantity {quantity}")
+                except Exception as e:
+                    self.logger.error(f"Failed to create transaction: {e}")
+                    # Don't fail the stock update if transaction creation fails
             
             return updated_product
         except Exception as e:
@@ -196,14 +206,19 @@ class ProductService(BaseService):
                 else:
                     return updated_product
                 
-                self.history_repository.create(
-                    product_id=product_id,
-                    product_name=product.name,
-                    user_id=product.owner_id,
-                    price=product.price,
-                    quantity=transaction_quantity,
-                    action=action
-                )
+                try:
+                    self.history_repository.create(
+                        product_id=product_id,
+                        product_name=product.name,
+                        user_id=product.owner_id,
+                        price=product.price,
+                        quantity=transaction_quantity,
+                        action=action
+                    )
+                    self.logger.info(f"Created {action} transaction for product {product_id}, quantity {transaction_quantity}")
+                except Exception as e:
+                    self.logger.error(f"Failed to create transaction: {e}")
+                    # Don't fail the stock update if transaction creation fails
             
             return updated_product
         except Exception as e:
