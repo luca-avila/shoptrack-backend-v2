@@ -23,6 +23,10 @@ class AuthController(BaseController):
             # Check username availability
             if services['user'].get_user_by_username(request.json['username']):
                 return self.error_response(message="Username already exists")
+            
+            # Check email availability
+            if request.json.get('email') and services['user'].get_user_by_email(request.json['email']):
+                return self.error_response(message="Email already exists")
 
             user = services['user'].create_user(
                 username=request.json['username'], 
