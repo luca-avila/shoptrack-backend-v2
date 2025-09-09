@@ -28,8 +28,25 @@ class ProductController(BaseController):
                 name=request.json['name'],
                 price=request.json['price'],
                 stock=request.json['stock'],
+                description=request.json.get('description'),
                 owner_id=user_id
             )
+            
+            # Create initial buy transaction if stock > 0
+            if product.stock > 0:
+                try:
+                    services['history'].create_transaction(
+                        product_id=product.id,
+                        product_name=product.name,
+                        user_id=user_id,
+                        price=product.price,
+                        quantity=product.stock,
+                        action='buy'
+                    )
+                except Exception as e:
+                    self.logger.error(f"Failed to create initial buy transaction: {e}")
+                    # Don't fail product creation if history creation fails
+            
             return self.success_response(data=product.to_dict())
             
         except Exception as e:
