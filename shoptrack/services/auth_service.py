@@ -8,7 +8,7 @@ class AuthService(BaseService):
 
     def authenticate_user(self, username, password):
         """Authenticate a user"""
-        user = self.user_repository.find_by_username(username)
+        user = self.user_repository.find_by_username(username.lower())
         if not user:
             return None
         if not check_password_hash(user.password, password):
@@ -21,7 +21,7 @@ class AuthService(BaseService):
             hashed_password = generate_password_hash(password)
             
             user = self.user_repository.create(
-                username=username, 
+                username=username.lower(), 
                 password=hashed_password,
                 email=email
             )

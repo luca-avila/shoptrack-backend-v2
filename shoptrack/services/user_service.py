@@ -9,7 +9,7 @@ class UserService(BaseService):
         """Create a user"""
         try:
             user = self.user_repository.create(
-                username=username, 
+                username=username.lower(), 
                 password=generate_password_hash(password), 
                 email=email
             )
@@ -23,7 +23,7 @@ class UserService(BaseService):
     
     def get_user_by_username(self, username):
         """Get a user by username"""
-        return self.user_repository.find_by_username(username)
+        return self.user_repository.find_by_username(username.lower())
 
     def get_user_by_email(self, email):
         """Get a user by email"""
